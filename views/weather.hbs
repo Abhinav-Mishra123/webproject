@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./css/style.css" />
+        <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+      integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+      crossorigin="anonymous"
+    ></script>
+</head>
+<body>
+    
+{{>navbar}}
+<div class="weather-section">
+    <div class="weather-info">
+<div class="container">
+    <div class="row">
+        <div class="input-tag">
+        <div class="col-md-12">
+            <div class="form-group">
+            <input type="text" id="cityName" placeholder="Enter your city name" autocomplete="off">
+            <input type="submit" value="search" id="submitBtn">
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="weather-details">
+        <div class="col-md-6 offset-md-3">
+            <div class="weatherinfo-column">
+                <div class="current_time_section">
+                    <p id="today"></p>
+                    <p id="today_Time"></p>
+            </div>
+            <h2 id="city_name"></h2>
+            <div class="data-hide">
+                <span id="temp" class="mt-3 mb-4"></span><span style="font-weight: 800;"><sup>&deg;</sup>C</span>
+                <p id="temp_status"><i class="fas fa-cloud"></i></p>
+                <div id="city_output"></div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+</div>
+</div>
+</body>
+<script src="../public/js/main.js"></script>
+<script>
+    const submitBtn = document.getElementById("submitBtn");
+    const cityName = document.getElementById("cityName");
+    const cityOutput = document.getElementById("city_output");
+    const temp_status = document.getElementById("temp_status");
+    const temp = document.getElementById("temp");
+    const city = document.getElementById("city_name");
+
+const getinfo = async (e) => {
+    e.preventDefault();
+    let cityVal = cityName.value;
+    if(cityVal === ""){
+cityOutput.innerText = "Please Write the name before search";
+    }
+    else{
+        try{
+                let url = `https://api.openweathermap.org/data/2.5/weather?q=${cityVal}&appid=7abc74283f672792b43496721ecd670a`;
+                const response = await fetch(url);
+                const data = await response.json();
+                const arrData = [data];
+                temp.innerText = (arrData[0].main.temp-273).toFixed(2);
+                temp_status.innerText = arrData[0].weather[0].main;
+                city.innerText =arrData[0].name;
+
+        }
+        catch(error){
+                cityOutput.innerText = "Please Write the name before search";
+                console.log(error)
+
+
+        }
+    }
+    
+
+    }
+
+submitBtn.addEventListener("click",getinfo);
+
+{{!-- current date and time --}}
+var months_name =["January","February","March","April","May","June","July","August","September","October","November","December"];
+var days_name = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function currentDate(){
+let date = new Date();
+let today_date = date.getDate();
+let today_month =months_name[date.getMonth()];
+let today_year = date.getFullYear();
+let today_day = days_name[date.getDay()];
+let currntdate = (`${today_day}, ${today_date}/${today_month}/${today_year}`);
+return currntdate;
+
+}
+
+document.getElementById("today").innerText = currentDate();
+
+
+function currentTime(){
+    let date = new Date();
+    let current_hour = date.getHours();
+    let current_minutes = date.getMinutes();
+    let current_seconds = date.getSeconds();
+     let periods = "AM";
+            if(current_hour>12){
+                periods = "PM"
+                if(current_hour >12) current_hour -=12;
+            }
+    if(current_hour < 10){
+        current_hour = "0" + current_hour;
+    }
+    if(current_minutes < 10){
+        current_minutes = "0" + current_minutes;
+    }
+    if(current_seconds < 10){
+        current_seconds = "0"+ current_seconds;
+    }
+    var current_time = `${current_hour}:${current_minutes}:${current_seconds} ${periods}`;
+    return current_time;
+
+}
+setInterval(()=>{
+document.getElementById("today_Time").innerText = currentTime();
+},1000)
+
+
+
+
+
+
+</script>
+</html>
